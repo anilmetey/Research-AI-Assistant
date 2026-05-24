@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --sidebar-bg: #0f0f10;
+  --sidebar-border: #1e1e20;
+  --sidebar-hover: #1a1a1c;
+  --main-bg: #ffffff;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --user-bubble: linear-gradient(135deg, #6366f1, #8b5cf6);
+  --ai-bubble: #f5f5f7;
+  --text-primary: #0f0f10;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #9ca3af; }
+
+/* Prose override */
+.prose p { margin: 0 0 0.5rem 0; }
+.prose p:last-child { margin-bottom: 0; }
+.prose ul, .prose ol { padding-left: 1.25rem; }
+.prose code { font-size: 0.85em; background: #f3f4f6; padding: 0.1em 0.35em; border-radius: 4px; }
+.prose pre { background: #1e1e2e; color: #cdd6f4; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+
+/* Streaming cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.streaming-cursor::after {
+  content: '▋';
+  display: inline-block;
+  animation: blink 0.7s infinite;
+  color: var(--accent);
+  margin-left: 2px;
+}

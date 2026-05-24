@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  
+  documents      Document[]
+  conversations  Conversation[]
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Document {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String
+  content   String   @db.Text
+  fileUrl   String?
+  mimeType  String?
+  
+  chunks    DocumentChunk[]
+  conversations Conversation[] @relation("DocumentToConversation")
+  
+  chunkCount Int     @default(0)
+  indexedAt  DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DocumentChunk {
+  id        String   @id @default(cuid())
+  documentId String
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  chunkIndex Int
+  content    String   @db.Text
+  embedding  String   @db.Text // Stored as JSON string to support pgvector raw queries without custom types
+  tokenCount Int?
+  
+  createdAt  DateTime @default(now())
+  
+  @@index([documentId])
+  @@unique([documentId, chunkIndex])
+}
+
+model Conversation {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String?
+  documents Document[] @relation("DocumentToConversation")
+  messages  Message[]
+  
+  isArchived Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  conversationId String
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  
+  role      String // "user" | "assistant"
+  content   String   @db.Text
+  sources   Json?    // Track source chunks
+  tokensUsed Int?
+  modelUsed String   @default("mistral")
+  
+  createdAt DateTime @default(now())
+  
+  @@index([conversationId])
+  @@index([role])
+}
